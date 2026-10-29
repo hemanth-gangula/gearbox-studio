@@ -9,12 +9,6 @@ services:
       - key: PYTHONUNBUFFERED
         value: "1"
       - key: PROJECTS_DIR
-        value: /app/projects
-      # Set ALLOWED_ORIGINS to your Vercel frontend URL after deploying
-      # e.g. https://gearbox-studio.vercel.app
+        value: /tmp/projects
       - key: ALLOWED_ORIGINS
-        value: http://localhost:3000
-    disk:
-      name: projects-data
-      mountPath: /app/projects
-      sizeGB: 1
+        value: https://gearbox-studio-orpin.vercel.app
