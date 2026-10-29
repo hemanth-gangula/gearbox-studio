@@ -1,6 +1,6 @@
 FROM python:3.12-slim
 
-# Install system deps needed by shapely, trimesh, reportlab
+# System deps for shapely, trimesh, reportlab
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     g++ \
@@ -10,18 +10,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# Copy and install Python dependencies first (layer cache)
+# Install Python deps first (layer cache)
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application source
+# Copy source
 COPY . .
 
-# Create projects directory for generated files
+# Projects dir (override via PROJECTS_DIR env var on Railway/Render)
 RUN mkdir -p /app/projects
 
-# Expose FastAPI port
 EXPOSE 8000
 
-# Run with uvicorn
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# PORT env var is set by Railway automatically; default to 8000 elsewhere
+CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
