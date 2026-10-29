@@ -1,8 +1,5 @@
 """
 Gearbox Studio — FastAPI backend application.
-
-Provides engineering calculation, DXF drawing generation, 3D mesh generation,
-STEP export, BOM, report generation, and design management APIs.
 """
 from __future__ import annotations
 
@@ -27,10 +24,21 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# CORS — allow the frontend dev server
+# ---------------------------------------------------------------------------
+# CORS
+# ALLOWED_ORIGINS env var: comma-separated list of frontend origins.
+# Defaults to localhost for local dev.
+# On Vercel set ALLOWED_ORIGINS=https://your-app.vercel.app
+# ---------------------------------------------------------------------------
+_raw = os.environ.get(
+    "ALLOWED_ORIGINS",
+    "http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000",
+)
+allowed_origins = [o.strip() for o in _raw.split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:3001", "http://127.0.0.1:3000"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -44,6 +52,7 @@ async def startup():
     os.makedirs(PROJECTS_DIR, exist_ok=True)
     logger.info("Gearbox Studio backend started")
     logger.info(f"Projects directory: {PROJECTS_DIR}")
+    logger.info(f"CORS allowed origins: {allowed_origins}")
 
 
 @app.get("/")

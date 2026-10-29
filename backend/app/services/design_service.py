@@ -47,8 +47,13 @@ from app.jobs.job_manager import job_manager
 _designs: dict[str, DesignRecord] = {}
 _designs_lock = threading.Lock()
 
-# Base directory for project files
-PROJECTS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))), "projects")
+# Base directory for project files.
+# PROJECTS_DIR env var lets Render/Docker override this to a mounted disk path.
+_default_projects = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))),
+    "projects",
+)
+PROJECTS_DIR = os.environ.get("PROJECTS_DIR", _default_projects)
 
 
 def _ensure_project_dir(design_id: str) -> str:
